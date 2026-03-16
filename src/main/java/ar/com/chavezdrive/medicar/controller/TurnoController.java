@@ -3,6 +3,7 @@ package ar.com.chavezdrive.medicar.controller;
 
 import ar.com.chavezdrive.medicar.model.Turno;
 import ar.com.chavezdrive.medicar.service.ITurnoService;
+import exceptions.TurnoOcupadoException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,12 +26,17 @@ public class TurnoController {
     public List<Turno> getTurnos() {
         return turnoServ.getTurnos();
     }
-
+   
     @PostMapping("/crear")
-    public String saveTurno(@RequestBody Turno tur) {
+public String saveTurno(@RequestBody Turno tur) {
+    try {
         turnoServ.saveTurno(tur);
         return "El turno fue reservado con éxito";
+    } catch (TurnoOcupadoException e) {
+        // Si el servicio lanzó la excepción, entramos aquí
+        return "Error al reservar: " + e.getMessage();
     }
+}
 
     @DeleteMapping("/borrar/{id}")
     public String deleteTurno(@PathVariable Long id) {

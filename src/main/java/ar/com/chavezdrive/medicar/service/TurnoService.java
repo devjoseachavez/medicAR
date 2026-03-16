@@ -3,6 +3,7 @@ package ar.com.chavezdrive.medicar.service;
 
 import ar.com.chavezdrive.medicar.model.Turno;
 import ar.com.chavezdrive.medicar.repository.TurnoRepository;
+import exceptions.TurnoOcupadoException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,9 +29,8 @@ public class TurnoService implements ITurnoService {
                         tur.getProfesional().getId());
 
     if (ocupado) {
-        // Agregar excepción personalizada 
-        System.out.println("Error: El profesional ya tiene un turno asignado en ese horario.");
-        return; // No guarda nada
+        // Agrego excepción personalizada 
+        throw new TurnoOcupadoException("El profesional ya tiene un turno en ese horario.");
     }
 
     repo.save(tur);
