@@ -1,10 +1,12 @@
 package ar.com.chavezdrive.medicar.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,9 +15,10 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "pacientes")
 public class Paciente extends Usuario {
-    private String grupoSanguineo;
-    private String nroAfiliado;
+    
     private String obraSocial;
+    private String nroAfiliado;
+    private String grupoSanguineo;
 
     @OneToMany(mappedBy = "paciente")
     @JsonIgnore

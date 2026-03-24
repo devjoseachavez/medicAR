@@ -1,14 +1,6 @@
-
 package ar.com.chavezdrive.medicar.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.Data;
@@ -17,21 +9,27 @@ import lombok.Data;
 @Entity
 @Table(name = "turnos")
 public class Turno {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private LocalDate fecha;
-
-    @Column(nullable = false)
     private LocalTime hora;
+    private String motivo;
 
     @ManyToOne
-    @JoinColumn(name = "paciente_id", nullable = false)
+    @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
     @ManyToOne
-    @JoinColumn(name = "profesional_id", nullable = false)
+    @JoinColumn(name = "profesional_id")
     private Profesional profesional;
+
+    @ManyToOne
+    @JoinColumn(name = "especialidad_id")
+    private Especialidad especialidad;
+
+    public Turno() {
+    }
 }

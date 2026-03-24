@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabecera_comun}"></head>
+<body>
+    <nav th:replace="~{fragmentos/base :: botonera}"></nav>
+
+    <main class="content-area">
+        <header class="mb-4 border-bottom pb-3">
+            <h2 class="text-secondary"><i class="bi bi-calendar-check-fill me-2"></i>Agenda de Turnos</h2>
+        </header>
+
+        <div th:if="${exito}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${exito}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-primary" th:text="${turno.id != null} ? 'Re-programar Turno' : 'Nuevo Turno'"></h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/turnos/guardar}" th:object="${turno}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Paciente</label>
+                                <select th:field="*{paciente}" class="form-select form-select-sm" required>
+                                    <option value="">Seleccionar Paciente...</option>
+                                    <option th:each="p : ${listaPacientes}" 
+                                            th:value="${p.id}" 
+                                            th:text="${p.apellido + ', ' + p.nombre + ' (DNI: ' + p.dni + ')'}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Especialidad</label>
+                                <select id="comboEspecialidad" th:field="*{especialidad}" class="form-select form-select-sm" required>
+    <option value="">Seleccione un médico primero...</option>
+</select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Profesional / Médico</label>
+                                <select id="comboProfesional" th:field="*{profesional}" class="form-select form-select-sm" required onchange="cargarEspecialidades()">
+    <option value="">Seleccionar Médico...</option>
+    <option th:each="m : ${listaProfesionales}" th:value="${m.id}" th:text="${m.apellido + ', ' + m.nombre}"></option>
+</select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold">Fecha</label>
+                                    <input type="date" th:field="*{fecha}" class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold">Hora</label>
+                                    <input type="time" th:field="*{hora}" class="form-control form-control-sm" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Motivo de consulta</label>
+                                <textarea th:field="*{motivo}" class="form-control form-control-sm" rows="2" placeholder="Ej: Control anual, Dolor abdominal..."></textarea>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary shadow-sm">
+                                    <i class="bi bi-calendar-plus me-1"></i> Confirmar Turno
+                                </button>
+                                <a th:if="${turno.id != null}" th:href="@{/turnos/gestion}" class="btn btn-light btn-sm">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+<script>
+function cargarEspecialidades() {
+    const profesionalId = document.getElementById("comboProfesional").value;
+    const comboEsp = document.getElementById("comboEspecialidad");
+
+    // Limpiar combo
+    comboEsp.innerHTML = '<option value="">Cargando...</option>';
+
+    if (!profesionalId) {
+        comboEsp.innerHTML = '<option value="">Seleccione un médico primero...</option>';
+        return;
+    }
+
+    // Llamada AJAX al servidor
+    fetch('/profesionales/especialidades-por-profesional/' + profesionalId)
+        .then(response => response.json())
+        .then(data => {
+            comboEsp.innerHTML = '<option value="">Seleccionar Especialidad...</option>';
+            data.forEach(esp => {
+                let option = document.createElement("option");
+                option.value = esp.id;
+                option.text = esp.nombre;
+                comboEsp.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            comboEsp.innerHTML = '<option value="">Error al cargar</option>';
+        });
+}
+</script>

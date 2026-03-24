@@ -130,5 +130,23 @@
             </div>
         </div>
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertExito = document.querySelector('[th\\:if="${exito}"]');
+            const alertError = document.querySelector('[th\\:if="${error}"]');
+            
+            if (alertExito && alertExito.offsetParent !== null) {
+                setTimeout(function() {
+                    alertExito.style.display = 'none';
+                }, 5000);
+            }
+            
+            if (alertError && alertError.offsetParent !== null) {
+                setTimeout(function() {
+                    alertError.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
 </body>
 </html>
